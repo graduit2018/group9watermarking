@@ -1,0 +1,33 @@
+version: "3"
+services:
+  web:
+    image: continuumio/anaconda3:latest
+    command: >
+      bash -c "/opt/conda/bin/conda install -c conda-forge jupyterlab -y
+      && /opt/conda/bin/jupyter lab --allow-root --notebook-dir=/opt/notebooks --ip='*' --port=8888 --no-browser"
+    networks:
+      - proxy
+    volumes:
+      - .:/opt/notebooks
+      - ./jupyter_notebook_config.py:/root/.jupyter/jupyter_notebook_config.py
+    environment:
+      - HOST=${HOST}
+      - USER=${USER}
+      - PASS=${PASS}
+      - VI_DB=${VI_DB}
+      - ID_DB=${ID_DB}
+      - TH_DB=${TH_DB}
+      - LOCAL_HOST=${LOCAL_HOST}
+      - LOCAL_USER=${LOCAL_USER}
+      - LOCAL_PASS=${LOCAL_PASS}
+      - LOCAL_VI_DB=${LOCAL_VI_DB}
+      - LOCAL_ID_DB=${LOCAL_ID_DB}
+      - LOCAL_TH_DB=${LOCAL_TH_DB}
+    labels:
+      - traefik.enable=true
+      - traefik.backend=anaconda3
+      - traefik.docker.network=proxy
+      - traefik.port=8888
+networks:
+  proxy:
+    external: true
